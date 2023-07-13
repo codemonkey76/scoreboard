@@ -1,4 +1,3 @@
-use egui_multiwin::egui::FontId;
 use egui_multiwin::egui_glow::EguiGlow;
 use egui_multiwin::{
     multi_window::NewWindowRequest,
@@ -26,7 +25,7 @@ impl RootWindow {
                     width: 800.0,
                     height: 400.0
                 })
-            .with_title("Root Window"),
+            .with_title("BJJ Scoreboard - Controls"),
             options: egui_multiwin::tracked_window::TrackedWindowOptions {
                 vsync: false,
                 shader: None,
@@ -64,11 +63,12 @@ impl TrackedWindow<AppCommon> for RootWindow {
                 quit = true;
             }
         });
+
         egui_multiwin::egui::CentralPanel::default().show(&egui.egui_ctx, |ui| {
+            if ui.button("Quit").clicked() {
+                quit = true;
+            }
             ui.heading(format!("number {}", c.clicks));
-            let t = egui_multiwin::egui::widget_text::RichText::new("Example custom font text");
-            let t = t.font(FontId { size: 12.0, family: egui_multiwin::egui::FontFamily::Name("computermodern".into())});
-            ui.label(t);
         });
         RedrawResponse {
             quit,

@@ -1,7 +1,10 @@
-use crate::windows::popup_window;
+use crate::{windows::popup_window, color_scheme::ColorScheme};
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub struct AppCommon {
-    pub clicks: u32,
+    //All application information is stored here.
+    pub color_scheme: ColorScheme
 }
 
 impl egui_multiwin::multi_window::CommonEventHandler<AppCommon, u32> for AppCommon {
