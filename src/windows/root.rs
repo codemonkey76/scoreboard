@@ -68,7 +68,7 @@ impl TrackedWindow<AppCommon> for RootWindow {
             if ui.button("Quit").clicked() {
                 quit = true;
             }
-            ui.heading(format!("number {}", c.clicks));
+            //ui.heading(format!("number {}", c.clicks));
         });
         RedrawResponse {
             quit,

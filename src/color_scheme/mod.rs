@@ -1,12 +1,13 @@
 use egui_multiwin::egui::Color32;
-use serde::{Serialize, Deserialize};
+use serde::{self, Deserialize, Serialize};
+
+mod serde_color32;
 
 #[derive(Deserialize, Serialize)]
 pub struct ColorScheme {
     competitor_1: CompetitorColorScheme,
     competitor_2: CompetitorColorScheme
 }
-
 
 impl Default for ColorScheme {
     fn default() -> Self {
@@ -19,14 +20,23 @@ impl Default for ColorScheme {
 
 #[derive(Deserialize, Serialize)]
 pub struct CompetitorColorScheme {
+    #[serde(with = "serde_color32")]
     bg: Color32,
+    #[serde(with = "serde_color32")]
     name: Color32,
+    #[serde(with = "serde_color32")]
     team: Color32,
+    #[serde(with = "serde_color32")]
     adv_bg: Color32,
+    #[serde(with = "serde_color32")]
     adv: Color32,
+    #[serde(with = "serde_color32")]
     pen_bg: Color32,
+    #[serde(with = "serde_color32")]
     pen: Color32,
+    #[serde(with = "serde_color32")]
     points_bg: Color32,
+    #[serde(with = "serde_color32")]
     points: Color32
 }
 
