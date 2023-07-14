@@ -4,17 +4,21 @@ use egui_multiwin::{
     tracked_window::{RedrawResponse, TrackedWindow}
 };
 
+use egui_multiwin::winit::window::Fullscreen::Borderless;
+
 use crate::app::AppCommon;
 
-pub struct PopupWindow {
+pub struct ScoreWindow {
     pub input: String,
+    is_fullscreen: bool
 }
 
-impl PopupWindow {
+impl ScoreWindow {
     pub fn request(label: String) -> NewWindowRequest<AppCommon> {
         NewWindowRequest {
-            window_state: Box::new(PopupWindow {
+            window_state: Box::new(ScoreWindow {
                 input: label.clone(),
+                is_fullscreen: false
             }),
             builder: egui_multiwin::winit::window::WindowBuilder::new()
                 .with_resizable(false)
@@ -31,7 +35,7 @@ impl PopupWindow {
     }
 }
 
-impl TrackedWindow<AppCommon> for PopupWindow {
+impl TrackedWindow<AppCommon> for ScoreWindow {
      fn redraw(
         &mut self,
         c: &mut AppCommon,
@@ -40,26 +44,27 @@ impl TrackedWindow<AppCommon> for PopupWindow {
     ) -> RedrawResponse<AppCommon> {
         let mut quit = false;
 
+
         egui_multiwin::egui::CentralPanel::default().show(&egui.egui_ctx, |ui| {
-            if ui.input(|i| i.key_pressed(egui_multiwin::egui::Key::A)) {
-                println!("Apressed");
+            if ui.input(|i| i.modifiers.alt && i.key_pressed(egui_multiwin::egui::Key::Enter)) {
+                self.is_fullscreen = !self.is_fullscreen;
+
+                if self.is_fullscreen {
+                    window.set_fullscreen(Some(Borderless(None)));
+                } else {
+                    window.set_fullscreen(None);
+                }
             };
-            if ui.button("Increment").clicked() {
-                //c.clicks += 1;
-                //window.set_title(&format!("Title update {}", c.clicks));
-            }
-            let response = ui.add(egui_multiwin::egui::TextEdit::singleline(&mut self.input));
-            if response.changed() {
-                // …
-            }
-            if response.lost_focus() && ui.input(|i| i.key_pressed(egui_multiwin::egui::Key::Enter))
-            {
-                // …
-            }
-            if ui.button("Quit").clicked() {
-                quit = true;
-            }
+            ui.label(format!("{:?}", c));
         });
+
+         if ! c.show_score_window {
+             quit = true;
+         }
+         if quit {
+             println!("Quitting score window");
+         }
+
         RedrawResponse {
             quit,
             new_windows: Vec::new(),

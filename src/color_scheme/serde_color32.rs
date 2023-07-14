@@ -1,5 +1,5 @@
     use egui_multiwin::egui::Color32;
-    use serde::{self, Deserialize, Deserializer, Serialize, Serializer};
+    use serde::{self, Deserialize, Deserializer, Serializer};
 
     pub fn serialize<S>(color: &Color32, serializer: S) -> Result<S::Ok, S::Error>
     where

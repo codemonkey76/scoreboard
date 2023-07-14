@@ -1,2 +1,2 @@
-pub mod popup_window;
-pub mod root;
+pub mod score_window;
+pub mod root_window;

@@ -2,10 +2,14 @@
 name = "scoreboard"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = ["Shane Poppleton <shane@bjja.com.au>"]
+description = "BJJ Scoreboard Application"
+license = "GPL-3.0-or-later"
+repository = "https://github.com/codemonkey76/scoreboard"
 
 [dependencies]
+directories = "5.0.1"
 egui-multiwin = "0.1.7"
+egui_extras = "0.22.0"
 serde = { version = "1.0.171", features = ["derive"] }
 toml = "0.7.6"
