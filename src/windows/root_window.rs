@@ -21,8 +21,8 @@ impl RootWindow {
             builder: egui_multiwin::winit::window::WindowBuilder::new()
                 .with_resizable(true)
                 .with_inner_size(egui_multiwin::winit::dpi::LogicalSize {
-                    width: 800.0,
-                    height: 400.0
+                    width: 1280.0,
+                    height: 720.0
                 })
             .with_title("BJJ Scoreboard - Controls"),
             options: egui_multiwin::tracked_window::TrackedWindowOptions {
@@ -31,7 +31,7 @@ impl RootWindow {
             }
         }
     }
-    pub fn table_ui(&mut self, ui: &mut egui_multiwin::egui::Ui) {
+    pub fn table_ui(&mut self, _ui: &mut egui_multiwin::egui::Ui) {
 
     }
 }
@@ -74,13 +74,14 @@ impl TrackedWindow<AppCommon> for RootWindow {
         egui_multiwin::egui::Window::new("🎮 Matches")
             .open(&mut self.show_matches)
             .vscroll(true)
+            .min_width(700.0)
             .show(&egui.egui_ctx, |ui| {
                 StripBuilder::new(ui)
                     .size(egui_extras::Size::remainder().at_least(100.0))
                     .vertical(|mut strip| {
                         strip.cell(|ui| {
                             egui_multiwin::egui::ScrollArea::horizontal().show(ui, |ui| {
-                                let mut table = TableBuilder::new(ui)
+                                let table = TableBuilder::new(ui)
                                     .striped(true)
                                     .resizable(true)
                                     .cell_layout(egui_multiwin::egui::Layout::left_to_right(egui_multiwin::egui::Align::Center))
@@ -88,18 +89,55 @@ impl TrackedWindow<AppCommon> for RootWindow {
                                     .column(Column::auto())
                                     .column(Column::auto())
                                     .column(Column::auto())
+                                    .column(Column::auto())
+                                    .column(Column::auto())
                                     .min_scrolled_height(0.0);
                                 table.header(20.0, |mut header| {
-                                   header.col(|ui| {
-                                       ui.strong("Row");
+                                    header.col(|ui| {
+                                        ui.strong("Select Match");
+                                    });
+                                    header.col(|ui| {
+                                       ui.strong("Competitor 1");
                                    });
+                                    header.col(|ui| {
+                                        ui.strong("Competitor 2");
+                                    });
+                                    header.col(|ui| {
+                                        ui.strong("Match Duration");
+                                    });
+                                    header.col(|ui| {
+                                        ui.strong("Division Name");
+                                    });
+                                    header.col(|ui| {
+                                        ui.strong("Type");
+                                    });
                                 })
                                     .body(|mut body| {
                                         for match_row in &c.matches {
                                             body.row(18.0, |mut row| {
                                                 row.col(|ui| {
-                                                    let label_string = format!("{:?}", match_row).to_string();
-                                                    ui.label(label_string);
+                                                    if ui.button("Select").clicked() {
+                                                        c.selected_match = Some(match_row.clone());
+                                                    }
+                                                });
+                                                row.col(|ui| {
+                                                    ui.label(format!("{}", match_row.competitor_one));
+                                                });
+
+                                                row.col(|ui| {
+                                                    ui.label(format!("{}", match_row.competitor_two));
+                                                });
+
+                                                row.col(|ui| {
+                                                    ui.label(format!("{}", match_row.time_limit));
+                                                });
+
+                                                row.col(|ui| {
+                                                    ui.label(match_row.division_name.to_string());
+                                                });
+
+                                                row.col(|ui| {
+                                                    ui.label(match_row.fight_type.to_string());
                                                 });
                                             });
 
@@ -111,10 +149,9 @@ impl TrackedWindow<AppCommon> for RootWindow {
             });
 
         egui_multiwin::egui::CentralPanel::default().show(&egui.egui_ctx, |ui| {
-            ui.label(format!("{:?}", c.color_scheme));
-            egui_multiwin::egui::Frame::default().show(ui, |ui| {
-                ui.label("Testing");
-            });
+            if let Some(bjj_match) = &c.selected_match {
+                ui.label(format!("Selected Match: {}", bjj_match.competitor_one));
+            }
         });
 
         RedrawResponse {

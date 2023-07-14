@@ -10,7 +10,8 @@ pub struct AppCommon {
     pub show_score_window: bool,
     //All application information is stored here.
     pub color_scheme: ColorScheme,
-    pub matches: Vec<BjjMatch>
+    pub matches: Vec<BjjMatch>,
+    pub selected_match: Option<BjjMatch>
 }
 
 pub enum WindowEvent {
@@ -24,7 +25,8 @@ impl AppCommon {
             return Self {
                 show_score_window: false,
                 color_scheme: AppCommon::read_color_scheme(proj_dirs.config_dir().join("color_scheme.toml")),
-                matches: AppCommon::load_matches(proj_dirs.config_dir().join("matches.toml"))
+                matches: AppCommon::load_matches(proj_dirs.config_dir().join("matches.toml")),
+                selected_match: None
             };
         } else {
             eprintln!("Could not find project directory");
@@ -33,7 +35,8 @@ impl AppCommon {
         Self {
             show_score_window: false,
             color_scheme: Default::default(),
-            matches: vec![]
+            matches: vec![],
+            selected_match: None
         }
     }
     fn read_color_scheme(file: PathBuf) -> ColorScheme {
@@ -64,7 +67,7 @@ impl AppCommon {
             Err(e) => { eprintln!("Error reading file: {:?}\n{:?}", file, e); }
         }
 
-        vec![]
+        BjjMatch::sample_matches()
     }
 }
 

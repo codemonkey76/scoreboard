@@ -10,7 +10,8 @@ use crate::app::AppCommon;
 
 pub struct ScoreWindow {
     pub input: String,
-    is_fullscreen: bool
+    is_fullscreen: bool,
+    should_quit: bool
 }
 
 impl ScoreWindow {
@@ -18,7 +19,8 @@ impl ScoreWindow {
         NewWindowRequest {
             window_state: Box::new(ScoreWindow {
                 input: label.clone(),
-                is_fullscreen: false
+                is_fullscreen: false,
+                should_quit: false
             }),
             builder: egui_multiwin::winit::window::WindowBuilder::new()
                 .with_resizable(false)
@@ -36,7 +38,13 @@ impl ScoreWindow {
 }
 
 impl TrackedWindow<AppCommon> for ScoreWindow {
-     fn redraw(
+    fn can_quit(&self, c: &mut AppCommon) -> bool {
+        c.show_score_window = false;
+
+        true
+    }
+
+    fn redraw(
         &mut self,
         c: &mut AppCommon,
         egui: &mut EguiGlow,
@@ -58,7 +66,7 @@ impl TrackedWindow<AppCommon> for ScoreWindow {
             ui.label(format!("{:?}", c));
         });
 
-         if ! c.show_score_window {
+         if ! c.show_score_window || self.should_quit {
              quit = true;
          }
          if quit {
