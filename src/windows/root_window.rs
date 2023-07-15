@@ -31,46 +31,7 @@ impl RootWindow {
             }
         }
     }
-    pub fn table_ui(&mut self, _ui: &mut egui_multiwin::egui::Ui) {
-
-    }
-}
-impl TrackedWindow<AppCommon> for RootWindow {
-    fn is_root(&self) -> bool {
-        true
-    }
-
-    fn set_root(&mut self, _root: bool) {}
-
-    fn redraw(
-        &mut self,
-        c: &mut AppCommon,
-        egui: &mut EguiGlow,
-        _window: &egui_multiwin::winit::window::Window,
-    ) -> RedrawResponse<AppCommon> {
-        let mut quit = false;
-
-        let mut windows_to_create = vec![];
-
-        egui_multiwin::egui::TopBottomPanel::top("Top Bar").show(&egui.egui_ctx, |ui| {
-            ui.horizontal(|ui| {
-                if ui.selectable_label(quit, "Quit").clicked() {
-                    quit = true;
-                }
-                if ui.selectable_label(self.show_matches, "🎮 Matches").clicked() {
-                    self.show_matches = !self.show_matches
-                }
-                if ui.selectable_label(c.show_score_window, "🕑 Show Scores Window").clicked() {
-                    c.show_score_window = ! c.show_score_window;
-
-                    if c.show_score_window {
-                        windows_to_create.push(ScoreWindow::request("Score Window".to_string()));
-                    }
-                }
-            });
-        });
-
-
+    pub fn matches_table_ui(&mut self, c: &mut AppCommon, egui: &mut EguiGlow) {
         egui_multiwin::egui::Window::new("🎮 Matches")
             .open(&mut self.show_matches)
             .vscroll(true)
@@ -97,8 +58,8 @@ impl TrackedWindow<AppCommon> for RootWindow {
                                         ui.strong("Select Match");
                                     });
                                     header.col(|ui| {
-                                       ui.strong("Competitor 1");
-                                   });
+                                        ui.strong("Competitor 1");
+                                    });
                                     header.col(|ui| {
                                         ui.strong("Competitor 2");
                                     });
@@ -147,16 +108,64 @@ impl TrackedWindow<AppCommon> for RootWindow {
                         })
                     });
             });
+    }
 
+    pub fn central_panel_ui(&mut self, c: &mut AppCommon, egui: &mut EguiGlow) {
         egui_multiwin::egui::CentralPanel::default().show(&egui.egui_ctx, |ui| {
             if let Some(bjj_match) = &c.selected_match {
                 ui.label(format!("Selected Match: {}", bjj_match.competitor_one));
             }
+        });
+    }
+
+    pub fn menu_bar_ui(&mut self, c: &mut AppCommon, egui: &mut EguiGlow) -> RedrawResponse<AppCommon> {
+        let mut quit = false;
+
+        let mut windows_to_create = vec![];
+
+        egui_multiwin::egui::TopBottomPanel::top("Top Bar").show(&egui.egui_ctx, |ui| {
+            ui.horizontal(|ui| {
+                if ui.selectable_label(quit, "Quit").clicked() {
+                    quit = true;
+                }
+                if ui.selectable_label(self.show_matches, "🎮 Matches").clicked() {
+                    self.show_matches = !self.show_matches
+                }
+                if ui.selectable_label(c.show_score_window, "🕑 Show Scores Window").clicked() {
+                    c.show_score_window = ! c.show_score_window;
+
+                    if c.show_score_window {
+                        windows_to_create.push(ScoreWindow::request("Score Window".to_string()));
+                    }
+                }
+            });
         });
 
         RedrawResponse {
             quit,
             new_windows: windows_to_create,
         }
+    }
+}
+impl TrackedWindow<AppCommon> for RootWindow {
+    fn is_root(&self) -> bool {
+        true
+    }
+
+    fn set_root(&mut self, _root: bool) {}
+
+    fn redraw(
+        &mut self,
+        c: &mut AppCommon,
+        egui: &mut EguiGlow,
+        _window: &egui_multiwin::winit::window::Window,
+    ) -> RedrawResponse<AppCommon> {
+
+
+        self.matches_table_ui(c, egui);
+        self.central_panel_ui(c, egui);
+
+        // Returns the RedrawResponse
+        self.menu_bar_ui(c, egui)
     }
 }
