@@ -1,8 +1,13 @@
-use std::fmt::{Display, Formatter};
-use serde::{Deserialize, Serialize};
-use fake::Fake;
 use fake::faker::name::raw::*;
 use fake::locales::*;
+use fake::Fake;
+use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Formatter};
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Matches {
+    pub matches: Vec<BjjMatch>,
+}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct BjjMatch {
@@ -13,6 +18,22 @@ pub struct BjjMatch {
     pub division_name: String,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Competitor {
+    pub first_name: String,
+    pub last_name: String,
+    pub team: String,
+    pub country: Country,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum Country {
+    Australia,
+    Brazil,
+    Japan,
+    UnitedStates,
+}
+
 impl Default for BjjMatch {
     fn default() -> Self {
         Self {
@@ -20,7 +41,7 @@ impl Default for BjjMatch {
             competitor_two: Competitor::default(),
             time_limit: 5,
             fight_type: String::from("Semi-Final"),
-            division_name: String::from("Middleweight <82.3KG")
+            division_name: String::from("Middleweight <82.3KG"),
         }
     }
 }
@@ -32,32 +53,24 @@ impl BjjMatch {
                 competitor_one: Competitor {
                     first_name: String::from("John"),
                     last_name: String::from("Smith"),
-                    team: Some(Team {
-                        name: String::from("Gracie Barra"),
-                        logo: None
-                    }),
-                    country: Country::Brazil
+                    team: String::from("Gracie Barra"),
+                    country: Country::Brazil,
                 },
-              ..Default::default()
+                ..Default::default()
             },
-            BjjMatch::default(), BjjMatch::default(), BjjMatch::default()]
+            BjjMatch::default(),
+            BjjMatch::default(),
+            BjjMatch::default(),
+        ]
     }
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Competitor {
-    pub first_name: String,
-    pub last_name: String,
-    pub team: Option<Team>,
-    pub country: Country
 }
 
 impl Display for Competitor {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{} {}", self.first_name, self.last_name)?;
 
-        if let Some(team) = &self.team {
-            write!(f, " ({})", team.name)?;
+        if !self.team.is_empty() {
+            write!(f, " ({})", self.team)?;
         }
 
         Ok(())
@@ -68,22 +81,8 @@ impl Default for Competitor {
         Self {
             first_name: FirstName(EN).fake(),
             last_name: LastName(EN).fake(),
-            team: None,
-            country: Country::UnitedStates
+            team: "".to_owned(),
+            country: Country::UnitedStates,
         }
     }
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Team {
-    pub name: String,
-    pub logo: Option<Vec<u8>>
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub enum Country {
-    Australia,
-    Brazil,
-    Japan,
-    UnitedStates
 }
