@@ -3,7 +3,9 @@ use egui_multiwin::multi_window::MultiWindow;
 pub mod app;
 pub mod bjj_match;
 pub mod color_scheme;
+pub mod font_config;
 pub mod score_grid;
+pub mod text_widget;
 pub mod windows;
 
 use app::AppCommon;
@@ -23,10 +25,10 @@ fn main() {
 
     let mut multi_window: MultiWindow<AppCommon, WindowEvent> = MultiWindow::new();
 
-    multi_window.add_font(
-        "score_font".to_string(),
-        egui_multiwin::egui::FontData::from_static(SCORE_FONT),
-    );
+    let mut font_data = egui_multiwin::egui::FontData::from_static(SCORE_FONT);
+    font_data.tweak.y_offset_factor = 0.08;
+
+    multi_window.add_font("score_font".to_string(), font_data);
 
     let root_window = root_window::RootWindow::request();
     let ac = AppCommon::from_project_dirs();

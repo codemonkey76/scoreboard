@@ -5,16 +5,16 @@ mod serde_color32;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ColorScheme {
-    competitor_1: CompetitorColorScheme,
-    competitor_2: CompetitorColorScheme,
+    pub competitor_1: CompetitorColorScheme,
+    pub competitor_2: CompetitorColorScheme,
     #[serde(with = "serde_color32")]
-    time_bg: Color32,
+    pub time_bg: Color32,
     #[serde(with = "serde_color32")]
-    time: Color32,
+    pub time: Color32,
     #[serde(with = "serde_color32")]
-    fight_info_heading: Color32,
+    pub fight_info_heading: Color32,
     #[serde(with = "serde_color32")]
-    fight_info_sub_heading: Color32
+    pub fight_info_sub_heading: Color32,
 }
 
 impl Default for ColorScheme {
@@ -31,7 +31,7 @@ impl Default for ColorScheme {
             time_bg: Color32::from_rgb(0, 0, 0),
             time: Color32::from_rgb(255, 255, 255),
             fight_info_heading: Color32::from_rgb(200, 200, 140),
-            fight_info_sub_heading: Color32::from_rgb(255, 255, 255)
+            fight_info_sub_heading: Color32::from_rgb(255, 255, 255),
         }
     }
 }
@@ -39,23 +39,23 @@ impl Default for ColorScheme {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct CompetitorColorScheme {
     #[serde(with = "serde_color32")]
-    bg: Color32,
+    pub bg: Color32,
     #[serde(with = "serde_color32")]
-    name: Color32,
+    pub name: Color32,
     #[serde(with = "serde_color32")]
-    team: Color32,
+    pub team: Color32,
     #[serde(with = "serde_color32")]
-    adv_bg: Color32,
+    pub adv_bg: Color32,
     #[serde(with = "serde_color32")]
-    adv: Color32,
+    pub adv: Color32,
     #[serde(with = "serde_color32")]
-    pen_bg: Color32,
+    pub pen_bg: Color32,
     #[serde(with = "serde_color32")]
-    pen: Color32,
+    pub pen: Color32,
     #[serde(with = "serde_color32")]
-    points_bg: Color32,
+    pub points_bg: Color32,
     #[serde(with = "serde_color32")]
-    points: Color32
+    pub points: Color32,
 }
 
 impl Default for CompetitorColorScheme {

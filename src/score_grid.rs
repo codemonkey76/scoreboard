@@ -1,4 +1,4 @@
-use egui_multiwin::egui::Rect;
+use egui_multiwin::egui::{Align2, Pos2, Rect};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug)]
@@ -27,6 +27,93 @@ pub struct ScoreGrid {
     pub fight_info: Rect,
     pub fight_sub_info: Rect,
     pub logo: Rect,
+}
+
+impl Default for ScoreGrid {
+    fn default() -> Self {
+        Self {
+            window: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            top: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            middle: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            bottom: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            competitor_one_flag: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            competitor_one_name: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            competitor_one_score: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            competitor_one_advantage: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            competitor_one_penalty: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            competitor_one_team: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            competitor_two_flag: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            competitor_two_name: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            competitor_two_score: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            competitor_two_advantage: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            competitor_two_penalty: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            competitor_two_team: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            timer: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            fight_info: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            fight_sub_info: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+            logo: Rect {
+                min: Pos2 { x: 0.0, y: 0.0 },
+                max: Pos2 { x: 0.0, y: 0.0 },
+            },
+        }
+    }
 }
 
 impl ScoreGrid {
@@ -87,6 +174,30 @@ impl ScoreGrid {
     }
 }
 
+pub trait CalculatePosition {
+    fn calc_pos(&self, alignment: Align2, padding: f32) -> Pos2;
+}
+
+impl CalculatePosition for Rect {
+    fn calc_pos(&self, alignment: Align2, padding: f32) -> Pos2 {
+        match alignment {
+            Align2::LEFT_CENTER => Pos2 {
+                x: self.min.x + padding,
+                y: (self.min.y + self.max.y) / 2.0,
+            },
+            Align2::CENTER_TOP => Pos2 {
+                x: (self.min.x + self.max.x) / 2.0,
+                y: self.min.y + padding,
+            },
+            Align2::CENTER_CENTER => Pos2 {
+                x: (self.min.x + self.max.x) / 2.0,
+                y: (self.min.y + self.max.y) / 2.0,
+            },
+            _ => todo!(),
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GridConfig {
     /// Horizontal percentage of screen taken up by points on the right
@@ -115,11 +226,11 @@ impl Default for GridConfig {
     fn default() -> Self {
         Self {
             points: 0.2,
-            name_adv: 0.5,
+            name_adv: 0.07,
             competitor_time: 0.3,
             flag_name: 0.2,
             name_team: 0.5,
-            timer_fight_info: 0.5,
+            timer_fight_info: 0.3,
             fight_info_sub_info: 0.5,
         }
     }

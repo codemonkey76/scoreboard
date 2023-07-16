@@ -8,10 +8,13 @@ use egui_multiwin::{
 
 use super::score_window::ScoreWindow;
 use crate::app::AppCommon;
+use crate::bjj_match::PointType;
 
 pub struct RootWindow {
     show_matches: bool,
     show_grid_config: bool,
+    show_font_config: bool,
+    show_match_controls: bool,
 }
 
 impl RootWindow {
@@ -20,6 +23,8 @@ impl RootWindow {
             window_state: Box::new(RootWindow {
                 show_matches: false,
                 show_grid_config: true,
+                show_font_config: true,
+                show_match_controls: false,
             }),
             builder: egui_multiwin::winit::window::WindowBuilder::new()
                 .with_resizable(true)
@@ -36,7 +41,7 @@ impl RootWindow {
     }
 
     pub fn matches_table_ui(&mut self, c: &mut AppCommon, egui: &mut EguiGlow) {
-        egui_multiwin::egui::Window::new("🎮 Matches")
+        egui_multiwin::egui::Window::new("Matches")
             .open(&mut self.show_matches)
             .vscroll(true)
             .min_width(700.0)
@@ -74,10 +79,10 @@ impl RootWindow {
                                             ui.strong("Match Duration");
                                         });
                                         header.col(|ui| {
-                                            ui.strong("Division Name");
+                                            ui.strong("Fight Info");
                                         });
                                         header.col(|ui| {
-                                            ui.strong("Type");
+                                            ui.strong("Fight Sub Info");
                                         });
                                     })
                                     .body(|mut body| {
@@ -107,11 +112,11 @@ impl RootWindow {
                                                 });
 
                                                 row.col(|ui| {
-                                                    ui.label(match_row.division_name.to_string());
+                                                    ui.label(match_row.fight_info.to_string());
                                                 });
 
                                                 row.col(|ui| {
-                                                    ui.label(match_row.fight_type.to_string());
+                                                    ui.label(match_row.fight_sub_info.to_string());
                                                 });
                                             });
                                         }
@@ -122,8 +127,76 @@ impl RootWindow {
             });
     }
 
+    pub fn match_controls_ui(&mut self, c: &mut AppCommon, egui: &mut EguiGlow) {
+        egui_multiwin::egui::Window::new("Match Controls")
+            .open(&mut self.show_match_controls)
+            .vscroll(true)
+            .min_width(700.0)
+            .show(&egui.egui_ctx, |ui| {
+                egui_multiwin::egui::Grid::new("Match Controls")
+                    .num_columns(9)
+                    .spacing([25.0, 8.0])
+                    .striped(true)
+                    .show(ui, |ui| {
+                        ui.label("Competitor 1");
+                        if ui.button("+2").clicked() {
+                            c.match_info.competitor_one.add(PointType::Point, 2);
+                        }
+                        if ui.button("+3").clicked() {
+                            c.match_info.competitor_one.add(PointType::Point, 3);
+                        }
+                        if ui.button("+4").clicked() {
+                            c.match_info.competitor_one.add(PointType::Point, 4);
+                        }
+                        if ui.button("-1").clicked() {
+                            c.match_info.competitor_one.subtract(PointType::Point);
+                        }
+                        if ui.button("A").clicked() {
+                            c.match_info.competitor_one.add(PointType::Advantage, 1);
+                        }
+                        if ui.button("-A").clicked() {
+                            c.match_info.competitor_one.subtract(PointType::Advantage);
+                        }
+                        if ui.button("P").clicked() {
+                            c.match_info.competitor_one.add(PointType::Penalty, 1);
+                        }
+                        if ui.button("-P").clicked() {
+                            c.match_info.competitor_one.subtract(PointType::Penalty);
+                        }
+                        ui.end_row();
+
+                        ui.label("Competitor 2");
+                        if ui.button("+2").clicked() {
+                            c.match_info.competitor_two.add(PointType::Point, 2);
+                        }
+                        if ui.button("+3").clicked() {
+                            c.match_info.competitor_two.add(PointType::Point, 3);
+                        }
+                        if ui.button("+4").clicked() {
+                            c.match_info.competitor_two.add(PointType::Point, 4);
+                        }
+                        if ui.button("-1").clicked() {
+                            c.match_info.competitor_two.subtract(PointType::Point);
+                        }
+                        if ui.button("A").clicked() {
+                            c.match_info.competitor_two.add(PointType::Advantage, 1);
+                        }
+                        if ui.button("-A").clicked() {
+                            c.match_info.competitor_two.subtract(PointType::Advantage);
+                        }
+                        if ui.button("P").clicked() {
+                            c.match_info.competitor_two.add(PointType::Penalty, 1);
+                        }
+                        if ui.button("-P").clicked() {
+                            c.match_info.competitor_two.subtract(PointType::Penalty);
+                        }
+                        ui.end_row();
+                    });
+            });
+    }
+
     pub fn grid_config_ui(&mut self, c: &mut AppCommon, egui: &mut EguiGlow) {
-        egui_multiwin::egui::Window::new("▦ Grid Config")
+        egui_multiwin::egui::Window::new("Grid Config")
             .open(&mut self.show_grid_config)
             .vscroll(true)
             .min_width(700.0)
@@ -153,7 +226,7 @@ impl RootWindow {
                         ui.add(
                             DragValue::new(&mut c.grid_config.name_adv)
                                 .speed(0.01)
-                                .clamp_range(0.1..=0.50),
+                                .clamp_range(0.05..=0.50),
                         );
                         ui.end_row();
 
@@ -192,6 +265,116 @@ impl RootWindow {
             });
     }
 
+    pub fn font_config_ui(&mut self, c: &mut AppCommon, egui: &mut EguiGlow) {
+        egui_multiwin::egui::Window::new("Font Config")
+            .open(&mut self.show_font_config)
+            .vscroll(true)
+            .min_width(700.0)
+            .show(&egui.egui_ctx, |ui| {
+                egui_multiwin::egui::Grid::new("Font Settings")
+                    .num_columns(2)
+                    .spacing([40.0, 4.0])
+                    .striped(true)
+                    .show(ui, |ui| {
+                        ui.label("Global scaling");
+                        ui.add(
+                            DragValue::new(&mut c.font_config.scale)
+                                .speed(0.01)
+                                .clamp_range(0.1..=5.0),
+                        );
+                        ui.end_row();
+
+                        ui.label("Competitor Name");
+                        ui.add(
+                            DragValue::new(&mut c.font_config.competitor_name)
+                                .speed(0.1)
+                                .clamp_range(1.0..=72.0),
+                        );
+                        ui.end_row();
+
+                        ui.label("Team Name");
+                        ui.add(
+                            DragValue::new(&mut c.font_config.team_name)
+                                .speed(0.1)
+                                .clamp_range(1.0..=72.0),
+                        );
+                        ui.end_row();
+
+                        ui.label("Points");
+                        ui.add(
+                            DragValue::new(&mut c.font_config.points)
+                                .speed(0.1)
+                                .clamp_range(1.0..=72.0),
+                        );
+                        ui.end_row();
+
+                        ui.label("Team");
+                        ui.add(
+                            DragValue::new(&mut c.font_config.team_name)
+                                .speed(0.1)
+                                .clamp_range(1.0..=72.0),
+                        );
+                        ui.end_row();
+
+                        ui.label("Adv. Label");
+                        ui.add(
+                            DragValue::new(&mut c.font_config.advantage_label)
+                                .speed(0.1)
+                                .clamp_range(1.0..=72.0),
+                        );
+                        ui.end_row();
+
+                        ui.label("Advantage");
+                        ui.add(
+                            DragValue::new(&mut c.font_config.advantage)
+                                .speed(0.1)
+                                .clamp_range(1.0..=72.0),
+                        );
+                        ui.end_row();
+
+                        ui.label("Pen. Label");
+                        ui.add(
+                            DragValue::new(&mut c.font_config.penalty_label)
+                                .speed(0.1)
+                                .clamp_range(1.0..=72.0),
+                        );
+                        ui.end_row();
+
+                        ui.label("Penalty");
+                        ui.add(
+                            DragValue::new(&mut c.font_config.penalty)
+                                .speed(0.1)
+                                .clamp_range(1.0..=72.0),
+                        );
+                        ui.end_row();
+
+                        ui.label("Timer");
+                        ui.add(
+                            DragValue::new(&mut c.font_config.time)
+                                .speed(0.1)
+                                .clamp_range(1.0..=72.0),
+                        );
+                        ui.end_row();
+
+                        ui.label("Fight Info");
+                        ui.add(
+                            DragValue::new(&mut c.font_config.fight_info)
+                                .speed(0.1)
+                                .clamp_range(1.0..=72.0),
+                        );
+                        ui.end_row();
+
+                        ui.label("Fight Sub Info");
+                        ui.add(
+                            DragValue::new(&mut c.font_config.fight_sub_info)
+                                .speed(0.1)
+                                .clamp_range(1.0..=72.0),
+                        );
+                        ui.end_row();
+                    });
+            });
+    }
+
     pub fn central_panel_ui(&mut self, c: &mut AppCommon, egui: &mut EguiGlow) {
         egui_multiwin::egui::CentralPanel::default().show(&egui.egui_ctx, |ui| {
             if let Some(bjj_match) = &c.selected_match {
@@ -214,6 +397,9 @@ impl RootWindow {
                 if ui.selectable_label(quit, "Quit").clicked() {
                     quit = true;
                 }
+
+                ui.checkbox(&mut c.show_debug_grid, "Debug Grid");
+
                 if ui
                     .selectable_label(self.show_matches, "🎮 Matches")
                     .clicked()
@@ -236,6 +422,18 @@ impl RootWindow {
                     .clicked()
                 {
                     self.show_grid_config = !self.show_grid_config
+                }
+                if ui
+                    .selectable_label(self.show_grid_config, "ⓕ Font Config")
+                    .clicked()
+                {
+                    self.show_font_config = !self.show_font_config
+                }
+                if ui
+                    .selectable_label(self.show_match_controls, "🎮 Match Controls")
+                    .clicked()
+                {
+                    self.show_match_controls = !self.show_match_controls
                 }
             });
         });
@@ -265,11 +463,14 @@ impl TrackedWindow<AppCommon> for RootWindow {
         egui: &mut EguiGlow,
         _window: &egui_multiwin::winit::window::Window,
     ) -> RedrawResponse<AppCommon> {
+        let response = self.menu_bar_ui(c, egui);
         self.matches_table_ui(c, egui);
+        self.match_controls_ui(c, egui);
         self.grid_config_ui(c, egui);
+        self.font_config_ui(c, egui);
         self.central_panel_ui(c, egui);
 
         // Returns the RedrawResponse
-        self.menu_bar_ui(c, egui)
+        response
     }
 }
