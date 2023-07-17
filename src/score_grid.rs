@@ -1,6 +1,6 @@
 use egui_multiwin::egui::{Align2, Pos2, Rect};
 use serde::{Deserialize, Serialize};
-use crate::text_widget::Padding;
+use crate::widgets::text_widget::Padding;
 
 #[derive(Debug)]
 pub struct ScoreGrid {

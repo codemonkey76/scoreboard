@@ -6,6 +6,7 @@ use directories::ProjectDirs;
 use std::fmt::Debug;
 use std::fs;
 use std::path::{Path, PathBuf};
+use crate::flag::Flags;
 
 const QUALIFIER: &str = "au";
 const ORGANIZATION: &str = "popplestones";
@@ -26,6 +27,7 @@ pub struct AppCommon {
     pub grid_config: GridConfig,
     pub font_config: FontConfig,
     pub score_grids: Option<ScoreGrid>,
+    pub flags: Flags,
     pub is_dirty: bool,
 }
 
@@ -53,6 +55,7 @@ impl AppCommon {
                 grid_config: AppCommon::load_item(config_dir.join(GRID_CONFIG_FILE)),
                 font_config: AppCommon::load_item(config_dir.join(FONT_CONFIG_FILE)),
                 score_grids: None,
+                flags: Default::default(),
                 is_dirty: false,
             };
         } else {
@@ -69,6 +72,7 @@ impl AppCommon {
             grid_config: Default::default(),
             font_config: Default::default(),
             score_grids: None,
+            flags: Default::default(),
             is_dirty: false,
         }
     }

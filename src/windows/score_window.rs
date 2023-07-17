@@ -1,4 +1,5 @@
-use egui_multiwin::egui::{Align2, Color32, FontId, Rounding, Stroke, Ui};
+use std::collections::HashMap;
+use egui_multiwin::egui::{Align2, Color32, FontId, Rect, Rounding, Stroke, TextureHandle, Ui};
 use egui_multiwin::egui_glow::EguiGlow;
 use egui_multiwin::{
     multi_window::NewWindowRequest,
@@ -9,25 +10,45 @@ use egui_multiwin::winit::window::Fullscreen::Borderless;
 
 use crate::app::AppCommon;
 use crate::bjj_match::{BjjMatch, MatchState};
+use crate::countries::Country;
 use crate::score_grid::ScoreGrid;
-use crate::text_widget::{Padding, TextWidget};
+use crate::widgets::image_widget::ImageWidget;
+use crate::widgets::text_widget::{Padding, TextWidget};
+use crate::widgets::Widget;
 
 pub struct ScoreWindow {
     is_fullscreen: bool,
     scale: f32,
     score_grid: ScoreGrid,
-    widgets: Vec<TextWidget>,
+    widgets: Vec<Widget>,
+    competitor_one_flag: Option<TextureHandle>,
+    competitor_two_flag: Option<TextureHandle>,
+    logo: Option<TextureHandle>
+}
+impl ScoreWindow {
+    pub fn new() -> Self {
+        Self {
+            is_fullscreen: false,
+            scale: 1.0,
+            score_grid: Default::default(),
+            widgets: vec![],
+            competitor_one_flag: None,
+            competitor_two_flag: None,
+            logo: None,
+        }
+    }
+}
+
+impl Default for ScoreWindow {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl ScoreWindow {
     pub fn request(label: String) -> NewWindowRequest<AppCommon> {
         NewWindowRequest {
-            window_state: Box::new(ScoreWindow {
-                is_fullscreen: false,
-                scale: 1.0,
-                score_grid: Default::default(),
-                widgets: vec![],
-            }),
+            window_state: Box::<ScoreWindow>::default(),
             builder: egui_multiwin::winit::window::WindowBuilder::new()
                 .with_resizable(true)
                 .with_inner_size(egui_multiwin::winit::dpi::LogicalSize {
@@ -182,22 +203,20 @@ impl ScoreWindow {
             .rect_stroke(grid.logo, Rounding::none(), Stroke::new(2.0, Color32::BLUE));
     }
 
-    fn calculate_score_grid(&mut self, c: &mut AppCommon, ui: &mut Ui) -> ScoreGrid {
+    fn calculate_score_grid(&mut self, c: &mut AppCommon, rect: Rect) -> ScoreGrid {
         // Re-run this anytime the grid config changes, or the screen is resized
-        ScoreGrid::calc_grids(ui.clip_rect(), &c.grid_config)
+        ScoreGrid::calc_grids(rect, &c.grid_config)
     }
 
     fn create_widgets(&mut self, c: &AppCommon, bjj_match: &BjjMatch) {
         self.widgets.clear();
-        // Create the widgets everytime the match changes
-        // Recalculate teh rectangles if any of the grid changes, or if the screen is resized.
-        // As naive implementation we will just do this every frame.
+
         let font = FontId {
             size: 12.0,
             family: egui_multiwin::egui::FontFamily::Name("score_font".into()),
         };
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: bjj_match.competitor_one.display_name(),
             alignment: Align2::LEFT_CENTER,
             rect: self.score_grid.competitor_one_name,
@@ -205,9 +224,9 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::left(4.0),
             color: c.color_scheme.competitor_1.name,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: bjj_match.competitor_two.display_name(),
             alignment: Align2::LEFT_CENTER,
             rect: self.score_grid.competitor_two_name,
@@ -215,9 +234,9 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::left(4.0),
             color: c.color_scheme.competitor_2.name,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: bjj_match.competitor_one.team.to_owned(),
             alignment: Align2::LEFT_CENTER,
             rect: self.score_grid.competitor_one_team,
@@ -225,9 +244,9 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::left(4.0),
             color: c.color_scheme.competitor_1.team,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: bjj_match.competitor_two.team.to_owned(),
             alignment: Align2::LEFT_CENTER,
             rect: self.score_grid.competitor_two_team,
@@ -235,9 +254,9 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::left(4.0),
             color: c.color_scheme.competitor_2.team,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: "Adv.".to_owned(),
             alignment: Align2::CENTER_TOP,
             rect: self.score_grid.competitor_one_advantage,
@@ -245,9 +264,9 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::top(1.5),
             color: c.color_scheme.competitor_1.adv,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: "Pen.".to_owned(),
             alignment: Align2::CENTER_TOP,
             rect: self.score_grid.competitor_one_penalty,
@@ -255,9 +274,9 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::top(1.5),
             color: c.color_scheme.competitor_1.pen,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: "Adv.".to_owned(),
             alignment: Align2::CENTER_TOP,
             rect: self.score_grid.competitor_two_advantage,
@@ -265,9 +284,9 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::top(1.5),
             color: c.color_scheme.competitor_2.adv,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: "Pen.".to_owned(),
             alignment: Align2::CENTER_TOP,
             rect: self.score_grid.competitor_two_penalty,
@@ -275,9 +294,9 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::top(1.5),
             color: c.color_scheme.competitor_2.pen,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: bjj_match.fight_info.to_owned(),
             alignment: Align2::LEFT_BOTTOM,
             rect: self.score_grid.fight_info,
@@ -285,9 +304,9 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::new(4.0, 0.0, 0.0, -2.0),
             color: c.color_scheme.fight_info_heading,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: bjj_match.fight_sub_info.to_owned(),
             alignment: Align2::LEFT_TOP,
             rect: self.score_grid.fight_sub_info,
@@ -295,9 +314,9 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::left(4.0),
             color: c.color_scheme.fight_info_sub_heading,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: c.match_info.get_formatted_remaining_time(),
             alignment: Align2::CENTER_CENTER,
             rect: self.score_grid.timer,
@@ -305,9 +324,9 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::none(),
             color: c.color_scheme.time,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: c.match_info.competitor_one.advantages.to_string(),
             alignment: Align2::CENTER_TOP,
             rect: self.score_grid.competitor_one_advantage,
@@ -315,9 +334,9 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::top(10.0),
             color: c.color_scheme.competitor_1.adv,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: c.match_info.competitor_one.penalties.to_string(),
             alignment: Align2::CENTER_TOP,
             rect: self.score_grid.competitor_one_penalty,
@@ -325,9 +344,9 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::top(10.0),
             color: c.color_scheme.competitor_2.pen,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: c.match_info.competitor_two.advantages.to_string(),
             alignment: Align2::CENTER_TOP,
             rect: self.score_grid.competitor_two_advantage,
@@ -335,9 +354,9 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::top(10.0),
             color: c.color_scheme.competitor_2.adv,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: c.match_info.competitor_two.penalties.to_string(),
             alignment: Align2::CENTER_TOP,
             rect: self.score_grid.competitor_two_penalty,
@@ -345,9 +364,9 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::top(10.0),
             color: c.color_scheme.competitor_2.pen,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: c.match_info.competitor_one.points.to_string(),
             alignment: Align2::CENTER_CENTER,
             rect: self.score_grid.competitor_one_score,
@@ -355,36 +374,92 @@ impl ScoreWindow {
             font: font.clone(),
             padding: Padding::none(),
             color: c.color_scheme.competitor_1.points,
-        });
+        }));
 
-        self.widgets.push(TextWidget {
+        self.widgets.push(Widget::Text(TextWidget {
             text: c.match_info.competitor_two.points.to_string(),
             alignment: Align2::CENTER_CENTER,
             rect: self.score_grid.competitor_two_score,
             font_size: c.font_config.points,
-            font: font.clone(),
+            font,
             padding: Padding::none(),
             color: c.color_scheme.competitor_2.points,
-        });
+        }));
+
+        if let Some(selected_match) = &c.selected_match {
+            let country = &selected_match.competitor_one.country;
+
+            if let Some(flag) = c.flags.get(country) {
+                if self.textures.get(country).is_none() {
+                    self.textures.insert(country, load_texture())
+                }
+                let iw = ImageWidget::new(
+                     "competitor_one_flag".to_owned(),
+                     flag.get(),
+                     self.score_grid.competitor_one_flag);
+                let w = Widget::Image(iw);
+                self.widgets.push(w);
+            }
+
+        }
+
+        if let Some(selected_match) = &c.selected_match {
+            let country = &selected_match.competitor_two.country;
+            if let Some(flag) = c.flags.get(country) {
+                let iw = ImageWidget::new(
+                    "competitor_two_flag".to_owned(),
+                    flag.get(),
+                    self.score_grid.competitor_two_flag);
+                let w = Widget::Image(iw);
+                self.widgets.push(w);
+            }
+
+        }
+
     }
 
     fn draw_widgets(&mut self, ui: &mut Ui, scale: f32) {
-        for widget in &self.widgets {
+        for widget in &mut self.widgets {
             widget.draw(ui, scale);
         }
     }
 
+    fn load_textures(&mut self, egui: &mut EguiGlow) {
+        /// TODO: Add code to load both the country flags and the logo
+        /// They can be stored as separate fields
+
+
+
+                if let Ok(image) = egui_extras::image::load_svg_bytes_with_size(
+                    self.image_data,
+                    egui_extras::image::FitTo::Height(360)
+                ) {
+                    self.texture_handle = Some(ctx.load_texture(self.name.clone(), image, TextureOptions::default()));
+                }
+            }
+        }
+        for widget in &mut self.widgets {
+            if let Widget::Image(image) = widget {
+                image.load_texture(&egui.egui_ctx);
+            }
+        }
+    }
+
     fn main_ui(&mut self, c: &mut AppCommon, egui: &mut EguiGlow) {
+        self.load_textures(egui);
+
         egui_multiwin::egui::CentralPanel::default().show(&egui.egui_ctx, |ui| {
             self.scale = ui.clip_rect().width() / 400.0 * c.font_config.scale;
-            self.score_grid = self.calculate_score_grid(c, ui);
+            self.score_grid = self.calculate_score_grid(c, ui.clip_rect());
             self.draw_grid(ui, c);
             if c.show_debug_grid {
                 self.draw_debug_grid(ui);
             }
 
             if let Some(bjj_match) = &c.selected_match {
-                self.create_widgets(c, bjj_match);
+                if self.widgets.is_empty() {
+                    self.create_widgets(c, bjj_match);
+                }
                 self.draw_widgets(ui, self.scale);
             }
         });

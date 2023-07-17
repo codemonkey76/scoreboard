@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::time::Instant;
 use rand::Rng;
+use crate::countries::Country;
+use crate::flag::Flags;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Matches {
@@ -189,13 +191,6 @@ impl Competitor {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub enum Country {
-    Australia,
-    Brazil,
-    Japan,
-    UnitedStates,
-}
 
 impl Default for BjjMatch {
     fn default() -> Self {
@@ -262,6 +257,7 @@ impl Default for Competitor {
             "One Purpose BJJ",
             "Atos"
         ];
+        let flags = Flags::new();
 
         let mut rng = rand::thread_rng();
         let team = teams[rng.gen_range(0..teams.len())].to_owned();
@@ -269,7 +265,10 @@ impl Default for Competitor {
             first_name: FirstName(EN).fake(),
             last_name: LastName(EN).fake(),
             team,
-            country: Country::UnitedStates,
+            country: flags
+                .random_country()
+                .unwrap_or(&Country::Australia)
+                .clone(),
         }
     }
 }

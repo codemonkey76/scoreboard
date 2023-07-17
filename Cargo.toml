@@ -10,7 +10,7 @@ repository = "https://github.com/codemonkey76/scoreboard"
 [dependencies]
 directories = "5.0.1"
 egui-multiwin = "0.1.7"
-egui_extras = "0.22.0"
+egui_extras = { version = "0.22.0", features = ["svg"] }
 fake = "2.6.1"
 rand = "0.8.5"
 serde = { version = "1.0.171", features = ["derive"] }

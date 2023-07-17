@@ -5,8 +5,10 @@ pub mod bjj_match;
 pub mod color_scheme;
 pub mod font_config;
 pub mod score_grid;
-pub mod text_widget;
 pub mod windows;
+pub mod countries;
+pub mod flag;
+pub mod widgets;
 
 use app::AppCommon;
 
