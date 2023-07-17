@@ -4,6 +4,7 @@ use fake::Fake;
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::time::Instant;
+use rand::Rng;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Matches {
@@ -77,6 +78,18 @@ impl MatchInformation {
             _ => self.time_remaining_milliseconds,
         }
     }
+
+    pub fn get_formatted_remaining_time(&self) -> String {
+        let remaining = self.get_time_remaining();
+
+        let minutes = remaining / 60000;
+        let seconds = (remaining % 60000) / 1000;
+        let milliseconds = remaining % 1000;
+
+        format!("{}:{:02}.{:03}", minutes, seconds, milliseconds)
+    }
+
+
 
     pub fn set_time(&mut self, time: usize) {
         self.time_limit_minutes = time;
@@ -186,12 +199,29 @@ pub enum Country {
 
 impl Default for BjjMatch {
     fn default() -> Self {
+        let divs = [
+            "Male GI / Purple / Master 1 (30+) / -70 KG (Feather)",
+            "Male GI / Black / Adult / Above 100.5 KG+ (Ultra Heavy)",
+            "Male Absolute GI / White / Master 1 (30+) / Open Weight",
+            "Female GI / Blue / Adult / -69 KG (Middle)",
+        ];
+
+        let types = [
+            "Heat",
+            "Quarter Final",
+            "Semi Final",
+            "Final",
+        ];
+
+        let mut rng = rand::thread_rng();
+        let div = divs[rng.gen_range(0..divs.len())].to_owned();
+        let fight_type = types[rng.gen_range(0..types.len())].to_owned();
         Self {
             competitor_one: Competitor::default(),
             competitor_two: Competitor::default(),
             time_limit: 5,
-            fight_info: String::from("Semi-Final"),
-            fight_sub_info: String::from("Middleweight <82.3KG"),
+            fight_info: fight_type,
+            fight_sub_info: div,
         }
     }
 }
@@ -199,15 +229,9 @@ impl Default for BjjMatch {
 impl BjjMatch {
     pub fn sample_matches() -> Vec<BjjMatch> {
         vec![
-            BjjMatch {
-                competitor_one: Competitor {
-                    first_name: String::from("John"),
-                    last_name: String::from("Smith"),
-                    team: String::from("Gracie Barra"),
-                    country: Country::Brazil,
-                },
-                ..Default::default()
-            },
+            BjjMatch::default(),
+            BjjMatch::default(),
+            BjjMatch::default(),
             BjjMatch::default(),
             BjjMatch::default(),
             BjjMatch::default(),
@@ -228,10 +252,23 @@ impl Display for Competitor {
 }
 impl Default for Competitor {
     fn default() -> Self {
+        let teams = [
+            "Alliance",
+            "Caza BJJ",
+            "Fight Club Jiu-Jitsu",
+            "Gracie Barra",
+            "Carlson Gracie",
+            "Infinity",
+            "One Purpose BJJ",
+            "Atos"
+        ];
+
+        let mut rng = rand::thread_rng();
+        let team = teams[rng.gen_range(0..teams.len())].to_owned();
         Self {
             first_name: FirstName(EN).fake(),
             last_name: LastName(EN).fake(),
-            team: "".to_owned(),
+            team,
             country: Country::UnitedStates,
         }
     }

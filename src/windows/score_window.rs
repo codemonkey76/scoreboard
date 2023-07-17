@@ -8,9 +8,9 @@ use egui_multiwin::{
 use egui_multiwin::winit::window::Fullscreen::Borderless;
 
 use crate::app::AppCommon;
-use crate::bjj_match::BjjMatch;
+use crate::bjj_match::{BjjMatch, MatchState};
 use crate::score_grid::ScoreGrid;
-use crate::text_widget::TextWidget;
+use crate::text_widget::{Padding, TextWidget};
 
 pub struct ScoreWindow {
     is_fullscreen: bool,
@@ -203,7 +203,7 @@ impl ScoreWindow {
             rect: self.score_grid.competitor_one_name,
             font_size: c.font_config.competitor_name,
             font: font.clone(),
-            padding: 4.0,
+            padding: Padding::left(4.0),
             color: c.color_scheme.competitor_1.name,
         });
 
@@ -213,7 +213,7 @@ impl ScoreWindow {
             rect: self.score_grid.competitor_two_name,
             font_size: c.font_config.competitor_name,
             font: font.clone(),
-            padding: 4.0,
+            padding: Padding::left(4.0),
             color: c.color_scheme.competitor_2.name,
         });
 
@@ -223,7 +223,7 @@ impl ScoreWindow {
             rect: self.score_grid.competitor_one_team,
             font_size: c.font_config.team_name,
             font: font.clone(),
-            padding: 4.0,
+            padding: Padding::left(4.0),
             color: c.color_scheme.competitor_1.team,
         });
 
@@ -233,7 +233,7 @@ impl ScoreWindow {
             rect: self.score_grid.competitor_two_team,
             font_size: c.font_config.team_name,
             font: font.clone(),
-            padding: 4.0,
+            padding: Padding::left(4.0),
             color: c.color_scheme.competitor_2.team,
         });
 
@@ -243,7 +243,7 @@ impl ScoreWindow {
             rect: self.score_grid.competitor_one_advantage,
             font_size: c.font_config.advantage_label,
             font: font.clone(),
-            padding: 1.5,
+            padding: Padding::top(1.5),
             color: c.color_scheme.competitor_1.adv,
         });
 
@@ -253,7 +253,7 @@ impl ScoreWindow {
             rect: self.score_grid.competitor_one_penalty,
             font_size: c.font_config.penalty_label,
             font: font.clone(),
-            padding: 1.5,
+            padding: Padding::top(1.5),
             color: c.color_scheme.competitor_1.pen,
         });
 
@@ -263,7 +263,7 @@ impl ScoreWindow {
             rect: self.score_grid.competitor_two_advantage,
             font_size: c.font_config.advantage_label,
             font: font.clone(),
-            padding: 1.5,
+            padding: Padding::top(1.5),
             color: c.color_scheme.competitor_2.adv,
         });
 
@@ -273,37 +273,37 @@ impl ScoreWindow {
             rect: self.score_grid.competitor_two_penalty,
             font_size: c.font_config.penalty_label,
             font: font.clone(),
-            padding: 1.5,
+            padding: Padding::top(1.5),
             color: c.color_scheme.competitor_2.pen,
         });
 
         self.widgets.push(TextWidget {
             text: bjj_match.fight_info.to_owned(),
-            alignment: Align2::LEFT_CENTER,
+            alignment: Align2::LEFT_BOTTOM,
             rect: self.score_grid.fight_info,
             font_size: c.font_config.fight_info,
             font: font.clone(),
-            padding: 4.0,
+            padding: Padding::new(4.0, 0.0, 0.0, -2.0),
             color: c.color_scheme.fight_info_heading,
         });
 
         self.widgets.push(TextWidget {
             text: bjj_match.fight_sub_info.to_owned(),
-            alignment: Align2::LEFT_CENTER,
+            alignment: Align2::LEFT_TOP,
             rect: self.score_grid.fight_sub_info,
             font_size: c.font_config.fight_sub_info,
             font: font.clone(),
-            padding: 4.0,
+            padding: Padding::left(4.0),
             color: c.color_scheme.fight_info_sub_heading,
         });
 
         self.widgets.push(TextWidget {
-            text: "0:00.000".to_string(),
-            alignment: Align2::LEFT_CENTER,
+            text: c.match_info.get_formatted_remaining_time(),
+            alignment: Align2::CENTER_CENTER,
             rect: self.score_grid.timer,
             font_size: c.font_config.time,
             font: font.clone(),
-            padding: 4.0,
+            padding: Padding::none(),
             color: c.color_scheme.time,
         });
 
@@ -313,7 +313,7 @@ impl ScoreWindow {
             rect: self.score_grid.competitor_one_advantage,
             font_size: c.font_config.advantage,
             font: font.clone(),
-            padding: 6.0,
+            padding: Padding::top(10.0),
             color: c.color_scheme.competitor_1.adv,
         });
 
@@ -323,7 +323,7 @@ impl ScoreWindow {
             rect: self.score_grid.competitor_one_penalty,
             font_size: c.font_config.penalty,
             font: font.clone(),
-            padding: 6.0,
+            padding: Padding::top(10.0),
             color: c.color_scheme.competitor_2.pen,
         });
 
@@ -333,7 +333,7 @@ impl ScoreWindow {
             rect: self.score_grid.competitor_two_advantage,
             font_size: c.font_config.advantage,
             font: font.clone(),
-            padding: 6.0,
+            padding: Padding::top(10.0),
             color: c.color_scheme.competitor_2.adv,
         });
 
@@ -343,7 +343,7 @@ impl ScoreWindow {
             rect: self.score_grid.competitor_two_penalty,
             font_size: c.font_config.penalty,
             font: font.clone(),
-            padding: 6.0,
+            padding: Padding::top(10.0),
             color: c.color_scheme.competitor_2.pen,
         });
 
@@ -353,7 +353,7 @@ impl ScoreWindow {
             rect: self.score_grid.competitor_one_score,
             font_size: c.font_config.points,
             font: font.clone(),
-            padding: 6.0,
+            padding: Padding::none(),
             color: c.color_scheme.competitor_1.points,
         });
 
@@ -363,7 +363,7 @@ impl ScoreWindow {
             rect: self.score_grid.competitor_two_score,
             font_size: c.font_config.points,
             font: font.clone(),
-            padding: 6.0,
+            padding: Padding::none(),
             color: c.color_scheme.competitor_2.points,
         });
     }
@@ -407,6 +407,9 @@ impl TrackedWindow<AppCommon> for ScoreWindow {
         self.sync_fullscreen_mode(window);
         self.main_ui(c, egui);
         self.handle_input(c, egui);
+        if c.match_info.match_state == MatchState::InProgress {
+            egui.egui_ctx.request_repaint();
+        }
 
         RedrawResponse {
             quit: !c.show_score_window,

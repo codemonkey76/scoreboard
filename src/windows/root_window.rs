@@ -191,6 +191,18 @@ impl RootWindow {
                             c.match_info.competitor_two.subtract(PointType::Penalty);
                         }
                         ui.end_row();
+
+                        ui.label("Match Controls");
+                        if ui.button("Start Match").clicked() {
+                            c.match_info.start();
+                        }
+                        if ui.button("End Match").clicked() {
+                            c.match_info.stop();
+                        }
+                        if ui.button("Pause Match").clicked() {
+                            c.match_info.pause();
+                        }
+
                     });
             });
     }

@@ -1,5 +1,6 @@
 use egui_multiwin::egui::{Align2, Pos2, Rect};
 use serde::{Deserialize, Serialize};
+use crate::text_widget::Padding;
 
 #[derive(Debug)]
 pub struct ScoreGrid {
@@ -175,23 +176,31 @@ impl ScoreGrid {
 }
 
 pub trait CalculatePosition {
-    fn calc_pos(&self, alignment: Align2, padding: f32) -> Pos2;
+    fn calc_pos(&self, alignment: Align2, padding: Padding, scale: f32) -> Pos2;
 }
 
 impl CalculatePosition for Rect {
-    fn calc_pos(&self, alignment: Align2, padding: f32) -> Pos2 {
+    fn calc_pos(&self, alignment: Align2, padding: Padding, scale: f32) -> Pos2 {
         match alignment {
             Align2::LEFT_CENTER => Pos2 {
-                x: self.min.x + padding,
+                x: self.min.x + (padding.left * scale),
                 y: (self.min.y + self.max.y) / 2.0,
             },
             Align2::CENTER_TOP => Pos2 {
                 x: (self.min.x + self.max.x) / 2.0,
-                y: self.min.y + padding,
+                y: self.min.y + (padding.top * scale),
             },
             Align2::CENTER_CENTER => Pos2 {
                 x: (self.min.x + self.max.x) / 2.0,
                 y: (self.min.y + self.max.y) / 2.0,
+            },
+            Align2:: LEFT_BOTTOM => Pos2 {
+                x: self.min.x + (padding.left * scale),
+                y: self.max.y - (padding.bottom * scale),
+            },
+            Align2:: LEFT_TOP => Pos2 {
+                x: self.min.x + (padding.left * scale),
+                y: self.min.y + (padding.top * scale),
             },
             _ => todo!(),
         }
