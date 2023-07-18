@@ -35,9 +35,9 @@ jobs:
 
       - name: Build Installer
         run: |
-          "`"C:/Program Files (x86)/WiX Toolset v3.x/bin/candle.exe`" scripts/installer.wxs"
-          "`"C:/Program Files (x86)/WiX Toolset v3.x/bin/light.exe`" scripts/installer.wixobj -o ${{ github.workspace }}/target/release/installer.msi"
-          ls ${{ github.workspace }}/target/release
+          "C:/Program Files (x86)/WiX Toolset v3.x/bin/candle.exe" scripts/installer.wxs
+          "C:/Program Files (x86)/WiX Toolset v3.x/bin/light.exe" scripts/installer.wixobj -o "${{ github.workspace }}/target/release/installer.msi"
+          ls "${{ github.workspace }}/target/release"
 
       - name: Create Release
         id: create_release
@@ -56,7 +56,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/release/installer.msi
+          asset_path: "${{ github.workspace }}/target/release/installer.msi"
           asset_name: installer.msi
           asset_content_type: application/octet-stream
 
