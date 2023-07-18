@@ -36,7 +36,8 @@ jobs:
       - name: Build Installer
         run: |
           "`"C:/Program Files (x86)/WiX Toolset v3.x/bin/candle.exe`" scripts/installer.wxs"
-          "`"C:/Program Files (x86)/WiX Toolset v3.x/bin/light.exe`" scripts/installer.wixobj -o ${GITHUB_WORKSPACE}/target/release/installer.msi"
+          "`"C:/Program Files (x86)/WiX Toolset v3.x/bin/light.exe`" scripts/installer.wixobj -o ${{ github.workspace }}/target/release/installer.msi"
+          ls ${{ github.workspace }}/target/release
 
       - name: Create Release
         id: create_release
