@@ -29,6 +29,7 @@ pub struct AppCommon {
     pub score_grids: Option<ScoreGrid>,
     pub flags: Flags,
     pub is_dirty: bool,
+    pub new_match: bool,
 }
 
 pub enum WindowEvent {
@@ -57,6 +58,7 @@ impl AppCommon {
                 score_grids: None,
                 flags: Default::default(),
                 is_dirty: false,
+                new_match: false
             };
         } else {
             eprintln!("Could not find project directory");
@@ -74,6 +76,7 @@ impl AppCommon {
             score_grids: None,
             flags: Default::default(),
             is_dirty: false,
+            new_match: false
         }
     }
 
