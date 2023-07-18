@@ -46,17 +46,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
           tag_name: ${{ github.ref == 'refs/heads/main' && github.ref || github.ref_name }}
-  release_name: Release ${{ github.ref == 'refs/heads/main' && github.ref || github.ref_name }}
-  draft: false
-  prerelease: false
+          release_name: Release ${{ github.ref == 'refs/heads/main' && github.ref || github.ref_name }}
+          draft: false
+          prerelease: false
 
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ github.workspace }}/target/release/installer.msi
-        asset_name: installer.msi
-        asset_content_type: application/octet-stream
-
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/target/release/installer.msi
+          asset_name: installer.msi
+          asset_content_type: application/octet-stream
