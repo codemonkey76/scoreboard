@@ -35,8 +35,8 @@ jobs:
 
     - name: Build Installer
       run: |
-        "C:/Program Files (x86)/WiX Toolset v3.x/bin/candle.exe" scripts/installer.wxs
-        "C:/Program Files (x86)/WiX Toolset v3.x/bin/light.exe" scripts/installer.wixobj -o target/release/installer.msi
+        "`"C:/Program Files (x86)/WiX Toolset v3.x/bin/candle.exe`" scripts/installer.wxs"
+        "`"C:/Program Files (x86)/WiX Toolset v3.x/bin/light.exe`" scripts/installer.wixobj -o target/release/installer.msi"
 
     - name: Create Release
       uses: actions/create-release@v1
