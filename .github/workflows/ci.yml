@@ -11,50 +11,51 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Install Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        target: x86_64-pc-windows-msvc
-        profile: minimal
-        override: true
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: x86_64-pc-windows-msvc
+          profile: minimal
+          override: true
 
-    - name: Build
-      uses: actions-rs/cargo@v1
-      with:
-        command: build
-        args: --release
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
 
-    - name: Install WiX Toolset
-      uses: crazy-max/ghaction-chocolatey@v1.6.0
-      with:
-        args: install wixtoolset
+      - name: Install WiX Toolset
+        uses: crazy-max/ghaction-chocolatey@v1.6.0
+        with:
+          args: install wixtoolset
 
-    - name: Build Installer
-      run: |
-        "`"C:/Program Files (x86)/WiX Toolset v3.x/bin/candle.exe`" scripts/installer.wxs"
-        "`"C:/Program Files (x86)/WiX Toolset v3.x/bin/light.exe`" scripts/installer.wixobj -o target/release/installer.msi"
+      - name: Build Installer
+        run: |
+          "`"C:/Program Files (x86)/WiX Toolset v3.x/bin/candle.exe`" scripts/installer.wxs"
+          "`"C:/Program Files (x86)/WiX Toolset v3.x/bin/light.exe`" scripts/installer.wixobj -o target/release/installer.msi"
 
-    - name: Create Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT }}
-      with:
-        tag_name: ${{ github.ref == 'refs/heads/main' && github.ref || github.ref_name }}
-        release_name: Release ${{ github.ref == 'refs/heads/main' && github.ref || github.ref_name }}
-        draft: false
-        prerelease: false
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          tag_name: ${{ github.ref == 'refs/heads/main' && github.ref || github.ref_name }}
+          release_name: Release ${{ github.ref == 'refs/heads/main' && github.ref || github.ref_name }}
+          draft: false
+          prerelease: false
 
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: target/release/installer.msi
-        asset_name: installer.msi
-        asset_content_type: application/octet-stream
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: target/release/installer.msi
+          asset_name: installer.msi
+          asset_content_type: application/octet-stream
 
