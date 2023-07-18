@@ -111,96 +111,32 @@ impl ScoreWindow {
     fn draw_debug_grid(&mut self, ui: &mut Ui) {
         let grid = &self.score_grid;
 
-        ui.painter().rect_stroke(
-            grid.competitor_one_name,
-            Rounding::none(),
-            Stroke::new(2.0, Color32::GREEN),
-        );
-        ui.painter().rect_stroke(
-            grid.competitor_one_team,
-            Rounding::none(),
-            Stroke::new(2.0, Color32::GREEN),
-        );
+        macro_rules! rect {
+            ($grid:expr) => {
+                ui.painter().rect_stroke(
+                    $grid,
+                    Rounding::none(),
+                    Stroke::new(2.0, Color32::GREEN),
+                );
+            };
+        }
 
-        ui.painter().rect_stroke(
-            grid.competitor_one_flag,
-            Rounding::none(),
-            Stroke::new(2.0, Color32::GREEN),
-        );
-
-        ui.painter().rect_stroke(
-            grid.competitor_one_advantage,
-            Rounding::none(),
-            Stroke::new(2.0, Color32::GREEN),
-        );
-
-        ui.painter().rect_stroke(
-            grid.competitor_one_penalty,
-            Rounding::none(),
-            Stroke::new(2.0, Color32::GREEN),
-        );
-
-        ui.painter().rect_stroke(
-            grid.competitor_one_score,
-            Rounding::none(),
-            Stroke::new(2.0, Color32::GREEN),
-        );
-
-        ui.painter().rect_stroke(
-            grid.competitor_two_name,
-            Rounding::none(),
-            Stroke::new(2.0, Color32::RED),
-        );
-        ui.painter().rect_stroke(
-            grid.competitor_two_team,
-            Rounding::none(),
-            Stroke::new(2.0, Color32::RED),
-        );
-
-        ui.painter().rect_stroke(
-            grid.competitor_two_flag,
-            Rounding::none(),
-            Stroke::new(2.0, Color32::RED),
-        );
-
-        ui.painter().rect_stroke(
-            grid.competitor_two_advantage,
-            Rounding::none(),
-            Stroke::new(2.0, Color32::RED),
-        );
-
-        ui.painter().rect_stroke(
-            grid.competitor_two_penalty,
-            Rounding::none(),
-            Stroke::new(2.0, Color32::RED),
-        );
-
-        ui.painter().rect_stroke(
-            grid.competitor_two_score,
-            Rounding::none(),
-            Stroke::new(2.0, Color32::RED),
-        );
-
-        ui.painter().rect_stroke(
-            grid.timer,
-            Rounding::none(),
-            Stroke::new(2.0, Color32::BLUE),
-        );
-
-        ui.painter().rect_stroke(
-            grid.fight_info,
-            Rounding::none(),
-            Stroke::new(2.0, Color32::BLUE),
-        );
-
-        ui.painter().rect_stroke(
-            grid.fight_sub_info,
-            Rounding::none(),
-            Stroke::new(2.0, Color32::BLUE),
-        );
-
-        ui.painter()
-            .rect_stroke(grid.logo, Rounding::none(), Stroke::new(2.0, Color32::BLUE));
+        rect!(grid.competitor_one_name);
+        rect!(grid.competitor_one_team);
+        rect!(grid.competitor_one_flag);
+        rect!(grid.competitor_one_advantage);
+        rect!(grid.competitor_one_penalty);
+        rect!(grid.competitor_one_score);
+        rect!(grid.competitor_two_name);
+        rect!(grid.competitor_two_team);
+        rect!(grid.competitor_two_flag);
+        rect!(grid.competitor_two_advantage);
+        rect!(grid.competitor_two_penalty);
+        rect!(grid.competitor_two_score);
+        rect!(grid.timer);
+        rect!(grid.fight_info);
+        rect!(grid.fight_sub_info);
+        rect!(grid.logo);
     }
 
     fn calculate_score_grid(&mut self, c: &mut AppCommon, rect: Rect) -> ScoreGrid {
