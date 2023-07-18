@@ -35,8 +35,8 @@ jobs:
 
       - name: Build Installer
         run: |
-          "C:/Program Files (x86)/WiX Toolset v3.x/bin/candle.exe" scripts/installer.wxs
-          "C:/Program Files (x86)/WiX Toolset v3.x/bin/light.exe" scripts/installer.wixobj -o ${{ github.workspace }}/target/release/installer.msi
+          & 'C:/Program Files (x86)/WiX Toolset v3.x/bin/candle.exe' 'scripts/installer.wxs'
+          & 'C:/Program Files (x86)/WiX Toolset v3.x/bin/light.exe' 'scripts/installer.wixobj' -o "${{ github.workspace }}/target/release/installer.msi"
           ls ${{ github.workspace }}/target/release
 
       - name: Create Release
@@ -46,17 +46,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
           tag_name: ${{ github.ref == 'refs/heads/main' && github.ref || github.ref_name }}
-          release_name: Release ${{ github.ref == 'refs/heads/main' && github.ref || github.ref_name }}
-          draft: false
-          prerelease: false
+  release_name: Release ${{ github.ref == 'refs/heads/main' && github.ref || github.ref_name }}
+  draft: false
+  prerelease: false
 
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/target/release/installer.msi
-          asset_name: installer.msi
-          asset_content_type: application/octet-stream
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ github.workspace }}/target/release/installer.msi
+        asset_name: installer.msi
+        asset_content_type: application/octet-stream
 
