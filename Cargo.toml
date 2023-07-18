@@ -1,6 +1,6 @@
 [package]
-name = "scoreboard"
-version = "0.1.0"
+name = "bjj_scoreboard"
+version = "0.1.2"
 edition = "2021"
 authors = ["Shane Poppleton <shane@bjja.com.au>"]
 description = "BJJ Scoreboard Application"
