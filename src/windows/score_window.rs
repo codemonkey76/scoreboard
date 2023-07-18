@@ -1,5 +1,6 @@
-use std::collections::HashMap;
-use egui_multiwin::egui::{Align2, Color32, FontId, Rect, Rounding, Stroke, TextureHandle, Ui};
+use egui_multiwin::egui::{
+    Align2, Color32, FontId, Rect, Rounding, Stroke, TextureHandle, TextureOptions, Ui,
+};
 use egui_multiwin::egui_glow::EguiGlow;
 use egui_multiwin::{
     multi_window::NewWindowRequest,
@@ -10,7 +11,6 @@ use egui_multiwin::winit::window::Fullscreen::Borderless;
 
 use crate::app::AppCommon;
 use crate::bjj_match::{BjjMatch, MatchState};
-use crate::countries::Country;
 use crate::score_grid::ScoreGrid;
 use crate::widgets::image_widget::ImageWidget;
 use crate::widgets::text_widget::{Padding, TextWidget};
@@ -23,7 +23,7 @@ pub struct ScoreWindow {
     widgets: Vec<Widget>,
     competitor_one_flag: Option<TextureHandle>,
     competitor_two_flag: Option<TextureHandle>,
-    logo: Option<TextureHandle>
+    logo: Option<TextureHandle>,
 }
 impl ScoreWindow {
     pub fn new() -> Self {
@@ -386,36 +386,23 @@ impl ScoreWindow {
             color: c.color_scheme.competitor_2.points,
         }));
 
-        if let Some(selected_match) = &c.selected_match {
-            let country = &selected_match.competitor_one.country;
+        self.widgets.push(Widget::Image(ImageWidget::new(
+            "competitor_one_flag".to_owned(),
+            self.competitor_one_flag.clone(),
+            self.score_grid.competitor_one_flag,
+        )));
 
-            if let Some(flag) = c.flags.get(country) {
-                if self.textures.get(country).is_none() {
-                    self.textures.insert(country, load_texture())
-                }
-                let iw = ImageWidget::new(
-                     "competitor_one_flag".to_owned(),
-                     flag.get(),
-                     self.score_grid.competitor_one_flag);
-                let w = Widget::Image(iw);
-                self.widgets.push(w);
-            }
+        self.widgets.push(Widget::Image(ImageWidget::new(
+            "competitor_two_flag".to_owned(),
+            self.competitor_two_flag.clone(),
+            self.score_grid.competitor_two_flag,
+        )));
 
-        }
-
-        if let Some(selected_match) = &c.selected_match {
-            let country = &selected_match.competitor_two.country;
-            if let Some(flag) = c.flags.get(country) {
-                let iw = ImageWidget::new(
-                    "competitor_two_flag".to_owned(),
-                    flag.get(),
-                    self.score_grid.competitor_two_flag);
-                let w = Widget::Image(iw);
-                self.widgets.push(w);
-            }
-
-        }
-
+        self.widgets.push(Widget::Image(ImageWidget::new(
+            "logo".to_owned(),
+            self.logo.clone(),
+            self.score_grid.logo,
+        )));
     }
 
     fn draw_widgets(&mut self, ui: &mut Ui, scale: f32) {
@@ -424,29 +411,47 @@ impl ScoreWindow {
         }
     }
 
-    fn load_textures(&mut self, egui: &mut EguiGlow) {
-        /// TODO: Add code to load both the country flags and the logo
-        /// They can be stored as separate fields
+    fn load_main_textures(&mut self, c: &mut AppCommon, egui: &mut EguiGlow) {
+        if c.new_match {
+            c.new_match = false;
 
-
-
-                if let Ok(image) = egui_extras::image::load_svg_bytes_with_size(
-                    self.image_data,
-                    egui_extras::image::FitTo::Height(360)
-                ) {
-                    self.texture_handle = Some(ctx.load_texture(self.name.clone(), image, TextureOptions::default()));
+            if let Some(bjj_match) = &c.selected_match {
+                let country = &bjj_match.competitor_one.country.clone();
+                if let Some(flag) = c.flags.get(country) {
+                    let data = flag.get();
+                    self.competitor_one_flag = self.load_texture(egui, data, "competitor_one_flag");
                 }
-            }
-        }
-        for widget in &mut self.widgets {
-            if let Widget::Image(image) = widget {
-                image.load_texture(&egui.egui_ctx);
+                let country = &bjj_match.competitor_two.country.clone();
+                if let Some(flag) = c.flags.get(country) {
+                    let data = flag.get();
+                    self.competitor_two_flag = self.load_texture(egui, data, "competitor_two_flag");
+                }
             }
         }
     }
 
+    fn load_texture(
+        &mut self,
+        egui: &mut EguiGlow,
+        data: &'static [u8],
+        name: &str,
+    ) -> Option<TextureHandle> {
+        if let Ok(image) = egui_extras::image::load_svg_bytes_with_size(
+            data,
+            egui_extras::image::FitTo::Height(360),
+        ) {
+            return Some(egui.egui_ctx.load_texture(
+                name.to_owned(),
+                image,
+                TextureOptions::default(),
+            ));
+        }
+
+        None
+    }
+
     fn main_ui(&mut self, c: &mut AppCommon, egui: &mut EguiGlow) {
-        self.load_textures(egui);
+        self.load_main_textures(c, egui);
 
         egui_multiwin::egui::CentralPanel::default().show(&egui.egui_ctx, |ui| {
             self.scale = ui.clip_rect().width() / 400.0 * c.font_config.scale;
@@ -457,9 +462,7 @@ impl ScoreWindow {
             }
 
             if let Some(bjj_match) = &c.selected_match {
-                if self.widgets.is_empty() {
-                    self.create_widgets(c, bjj_match);
-                }
+                self.create_widgets(c, bjj_match);
                 self.draw_widgets(ui, self.scale);
             }
         });

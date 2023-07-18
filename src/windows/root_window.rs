@@ -91,6 +91,7 @@ impl RootWindow {
                                                 row.col(|ui| {
                                                     if ui.button("Select").clicked() {
                                                         c.selected_match = Some(match_row.clone());
+                                                        c.new_match = true;
                                                     }
                                                 });
                                                 row.col(|ui| {

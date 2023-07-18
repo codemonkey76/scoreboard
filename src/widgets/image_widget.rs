@@ -1,31 +1,18 @@
-use egui_multiwin::egui::{Color32, Context, pos2, Rect, TextureHandle, TextureId, TextureOptions, Ui};
+use egui_multiwin::egui::{Color32, pos2, Rect, TextureHandle, Ui};
 
 
 pub struct ImageWidget {
     pub name: String,
-    pub image_data: &'static [u8],
     pub rect: Rect,
     texture_handle: Option<TextureHandle>,
 }
 
 impl ImageWidget {
-    pub fn new(name: String, image_data: &'static [u8], rect: Rect) -> Self {
+    pub fn new(name: String, texture_handle: Option<TextureHandle>, rect: Rect) -> Self {
         Self {
             name,
-            image_data,
             rect,
-            texture_handle: None,
-        }
-    }
-
-    pub fn load_texture(&mut self, ctx: &Context) {
-        if self.texture_handle.is_none() {
-            if let Ok(image) = egui_extras::image::load_svg_bytes_with_size(
-                self.image_data,
-                egui_extras::image::FitTo::Height(360)
-            ) {
-                self.texture_handle = Some(ctx.load_texture(self.name.clone(), image, TextureOptions::default()));
-            }
+            texture_handle,
         }
     }
 
