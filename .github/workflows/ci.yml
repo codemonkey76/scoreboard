@@ -35,19 +35,20 @@ jobs:
 
       - name: Check WiX Installation
         run: |
-          ls "C:\\Program Files\\"
-          ls "C:\\Program Files (x86)\\WiX Toolset v3.11\\"
+          ls "C:/Program Files/"
+          ls "C:/Program Files (x86)/WiX Toolset v3.11/"
 
       - name: Build MSI Installer
         run: |
-          "`"C:\\Program Files (x86)\\WiX Toolset v3.11\\bin\\candle.exe`" scripts\\installer.wxs"
+          "`"C:/Program Files (x86)/WiX Toolset v3.11/bin/candle.exe`" scripts/installer.wxs"
 
       - name: Link Installer
         run: |
-          "`C:\\Program Files (x86)\\WiX Toolset v3.11\\bin\\light.exe`" scripts\\installer.wixobj -o ${{ github.workspace }}\\target\\release\\installer.msi"
+          "`C:/Program Files (x86)/WiX Toolset v3.11/bin/light.exe`" scripts/installer.wixobj -o ${{ github.workspace }}/target/release/installer.msi"
 
       - name: Check output
-        run: ls "${{ github.workspace }}\\target\\release"
+        run: |
+          ls "${{ github.workspace }}/target/release"  
 
       - name: Create Release
         id: create_release
