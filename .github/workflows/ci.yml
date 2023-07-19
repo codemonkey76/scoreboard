@@ -40,7 +40,7 @@ jobs:
 
       - name: Build MSI Installer
         run: |
-          & "C:\\Program Files (x86)\\WiX Toolset v3.11\\bin\\candle.exe" "scripts\\installer.wxs"
+          "`"C:\\Program Files (x86)\\WiX Toolset v3.11\\bin\\candle.exe`" scripts\\installer.wxs"
 
       - name: Link Installer
         run: |
