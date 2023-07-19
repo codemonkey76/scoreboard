@@ -35,6 +35,9 @@ jobs:
 
       - name: Build Installer
         run: |
+          ls /wix
+          ls "C:\Program Files\"
+          ls "C:\Program Files (x86)\"
           & "/wix/bin/candle.exe" "scripts/installer.wxs"
           & "/wix/bin/light.exe" scripts/installer.wixobj -o "${{ github.workspace }}/target/release/installer.msi"
           ls "${{ github.workspace }}/target/release"
