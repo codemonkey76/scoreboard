@@ -34,8 +34,7 @@ jobs:
           args: install wixtoolset --% -ia INSTALLDIR="\wix"
 
       - name: Build Installer
-        run: |
-          ls /wix
+        run: |      
           ls "C:\Program Files\"
           ls "C:\Program Files (x86)\"
           & "/wix/bin/candle.exe" "scripts/installer.wxs"
