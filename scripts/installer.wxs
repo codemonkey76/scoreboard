@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   <Product Id="*" Name="BJJ Scoreboard" Version="1.0.0" Manufacturer="Popplestones" Language="1033" UpgradeCode="21f1d526-36d0-4261-a4a9-bc64aa1c3c71">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
