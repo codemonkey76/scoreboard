@@ -31,15 +31,16 @@ jobs:
       - name: Install WiX Toolset
         uses: crazy-max/ghaction-chocolatey@v1.6.0
         with:
-          args: install wixtoolset --% -ia INSTALLDIR="\wix"
+          args: install wixtoolset
 
       - name: Build Installer
         run: |      
           ls "C:\Program Files\"
-          ls "C:\Program Files (x86)\"
-          & "/wix/bin/candle.exe" "scripts/installer.wxs"
-          & "/wix/bin/light.exe" scripts/installer.wixobj -o "${{ github.workspace }}/target/release/installer.msi"
-          ls "${{ github.workspace }}/target/release"
+          ls "C:\Program Files (x86)\WiX Toolset v3.11\"
+          "C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" "scripts\installer.wxs"
+          ls scripts
+          "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" scripts\installer.wixobj -o "${{ github.workspace }}/target/release/installer.msi"
+          ls "${{ github.workspace }}\target\release"
 
       - name: Create Release
         id: create_release
